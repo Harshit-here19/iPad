@@ -1,4 +1,4 @@
-const CACHE_NAME = "retropod-v1";
+const CACHE_NAME = "retropod-v2";
 
 const urlsToCache = [
   "./",
