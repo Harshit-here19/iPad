@@ -344,6 +344,28 @@ window.addEventListener('mouseup', () => {
     isDragging = false;
 });
 
+const batteryText = document.getElementById("battery");
+
+async function updateBattery() {
+    if (!navigator.getBattery) {
+        batteryText.innerText = "--%";
+        return;
+    }
+
+    const battery = await navigator.getBattery();
+
+    function refreshBattery() {
+        batteryText.innerText =
+            Math.round(battery.level * 100) + "%";
+    }
+
+    refreshBattery();
+
+    battery.addEventListener("levelchange", refreshBattery);
+}
+
+updateBattery();
+
 </script>
 
 </body>
