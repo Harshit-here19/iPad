@@ -221,12 +221,31 @@ if ("serviceWorker" in navigator) {
     };
 
     function loadTrack(idx) {
-        currentIdx = idx;
-        const url = URL.createObjectURL(songs[idx]);
-        player.src = url;
-        title.innerText = songs[idx].name.split('.')[0];
-        artist.innerText = "Local Library";
+    currentIdx = idx;
+
+    const url = URL.createObjectURL(songs[idx]);
+
+    player.src = url;
+
+    title.innerText = songs[idx].name.split('.')[0];
+    artist.innerText = "Local Library";
+
+    // Lock screen / Control Center info
+    if ('mediaSession' in navigator) {
+        navigator.mediaSession.metadata = new MediaMetadata({
+            title: songs[idx].name.split('.')[0],
+            artist: "Local Library",
+            album: "RetroPod",
+            artwork: [
+                {
+                    src: "icon-512.png",
+                    sizes: "512x512",
+                    type: "image/png"
+                }
+            ]
+        });
     }
+}
 
     function togglePlay() {
         if (!player.src) return;
