@@ -234,22 +234,94 @@
 
     player.onended = () => nextTrack();
 
-    // Wheel Spin Simulation (Visual Only)
-    let angle = 0;
-    wheel.addEventListener('wheel', (e) => {
-        e.preventDefault();
-        angle += e.deltaY * 0.1;
-        wheel.style.transform = `rotate(${angle}deg)`;
-    });
+    const wheel = document.getElementById('click-wheel');
 
-    // Touch support for the "Spin" feel on iPhone
-    let lastY = 0;
-    wheel.addEventListener('touchmove', (e) => {
-        let currentY = e.touches[0].clientY;
-        angle += (currentY - lastY) * 0.5;
-        wheel.style.transform = `rotate(${angle}deg)`;
-        lastY = currentY;
-    }, {passive: true});
+let isDragging = false;
+let lastAngle = 0;
+let rotationAccumulator = 0;
+
+function getAngle(x, y, rect) {
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+
+    return Math.atan2(y - cy, x - cx) * (180 / Math.PI);
+}
+
+function handleMove(clientX, clientY) {
+    const rect = wheel.getBoundingClientRect();
+    const angle = getAngle(clientX, clientY, rect);
+
+    let delta = angle - lastAngle;
+
+    // Prevent jump between -180 and 180
+    if (delta > 180) delta -= 360;
+    if (delta < -180) delta += 360;
+
+    rotationAccumulator += delta;
+
+    // Trigger action every 25 degrees
+    if (rotationAccumulator > 25) {
+        nextTrack();
+        rotationAccumulator = 0;
+    }
+
+    if (rotationAccumulator < -25) {
+        prevTrack();
+        rotationAccumulator = 0;
+    }
+
+    lastAngle = angle;
+}
+
+/* TOUCH */
+wheel.addEventListener('touchstart', (e) => {
+    isDragging = true;
+
+    const rect = wheel.getBoundingClientRect();
+    lastAngle = getAngle(
+        e.touches[0].clientX,
+        e.touches[0].clientY,
+        rect
+    );
+});
+
+wheel.addEventListener('touchmove', (e) => {
+    if (!isDragging) return;
+
+    handleMove(
+        e.touches[0].clientX,
+        e.touches[0].clientY
+    );
+}, { passive: true });
+
+wheel.addEventListener('touchend', () => {
+    isDragging = false;
+});
+
+/* MOUSE */
+wheel.addEventListener('mousedown', (e) => {
+    isDragging = true;
+
+    const rect = wheel.getBoundingClientRect();
+    lastAngle = getAngle(
+        e.clientX,
+        e.clientY,
+        rect
+    );
+});
+
+window.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+
+    handleMove(
+        e.clientX,
+        e.clientY
+    );
+});
+
+window.addEventListener('mouseup', () => {
+    isDragging = false;
+});
 
 </script>
 
