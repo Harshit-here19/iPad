@@ -13,6 +13,7 @@ const nowPlayingView = document.getElementById('now-playing-view');
 const songList = document.getElementById('song-list');
 const screenMode = document.getElementById('screen-mode');
 const menuLabel = document.querySelector('.menu');
+const videoPlayer = document.getElementById('video-player');
 
 // 2. State Variables
 let songs = [];
@@ -53,22 +54,48 @@ function renderPlaylist() {
 }
 
 // 4. Playback Functions
+// Variable to track if we are using the <audio> or <video> element
+let activeMedia = player; 
+
 function loadTrack(idx) {
     if (!songs[idx]) return;
 
     currentIdx = idx;
     localStorage.setItem('lastPlayedIndex', currentIdx);
 
+    const file = songs[idx];
+    const url = URL.createObjectURL(file);
+    const isVideo = file.type.startsWith('video');
+
+    // 1. Clean up previous sources to save memory
     if (player.src) URL.revokeObjectURL(player.src);
+    if (videoPlayer.src) URL.revokeObjectURL(videoPlayer.src);
 
-    const url = URL.createObjectURL(songs[idx]);
-    player.src = url;
+    // 2. Handle Video vs Audio UI Swap
+    if (isVideo) {
+        activeMedia = videoPlayer;
+        player.pause();
+        player.src = ""; // Clear audio
+        
+        videoPlayer.src = url;
+        videoPlayer.style.display = 'block';
+        nowPlayingView.style.display = 'none'; // Hide song info to show video
+    } else {
+        activeMedia = player;
+        videoPlayer.pause();
+        videoPlayer.src = ""; // Clear video
+        videoPlayer.style.display = 'none';
+        
+        player.src = url;
+        nowPlayingView.style.display = 'flex';
+        
+        // Update text metadata for audio only
+        const songName = file.name.split('.')[0];
+        title.innerText = songName;
+        artist.innerText = `Song ${currentIdx + 1} of ${songs.length}`;
+    }
 
-    const songName = songs[idx].name.split('.')[0];
-    title.innerText = songName;
-    artist.innerText = `Song ${currentIdx + 1} of ${songs.length}`;
-
-    // Update Playlist UI
+    // 3. Update Playlist UI (Shared logic)
     document.querySelectorAll('.song-item').forEach(el => el.classList.remove('active'));
     const activeItem = document.getElementById(`song-${idx}`);
     if (activeItem) {
@@ -76,17 +103,18 @@ function loadTrack(idx) {
         activeItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
-    // Update Media Session (Lock Screen Controls)
+    // 4. Media Session (Lock Screen Controls)
     if ('mediaSession' in navigator) {
         navigator.mediaSession.metadata = new MediaMetadata({
-            title: songName,
+            title: file.name.split('.')[0],
             artist: "Local Library",
             album: "RetroPod"
         });
         setupMediaActions();
     }
 
-    player.play().catch(() => console.log("User interaction required to play"));
+    // 5. Play the active media
+    activeMedia.play().catch(() => console.log("User interaction required"));
 }
 
 function setupMediaActions() {

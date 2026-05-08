@@ -211,3 +211,17 @@ body {
     background-color: #2b3a2e;
     color: var(--screen-green);
 }
+
+#video-player {
+    width: 100%;
+    height: 100%;
+    display: none; /* Hidden until a video is loaded */
+    background: #000;
+    object-fit: contain; /* Ensures the video isn't stretched */
+    border-radius: 4px;
+}
+
+/* Ensure the Now Playing text hides when video is active */
+.now-playing.video-active {
+    display: none !important;
+}

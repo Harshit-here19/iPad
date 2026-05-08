@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -9,51 +10,56 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 </head>
+
 <body>
 
-<div class="ipod">
-    <!-- LCD Screen -->
-    <div class="screen">
-        <div class="screen-top">
-            <span id="screen-mode">Now Playing</span>
-            <span id="battery">--%</span>
-        </div>
-        
-        <div id="screen-content">
-            <!-- Now Playing View -->
-            <div class="now-playing" id="now-playing-view">
-                <div id="song-title">No Music</div>
-                <div id="artist-name">Select files below</div>
-                <div class="progress-container">
-                    <div id="progress-fill"></div>
+    <div class="ipod">
+        <!-- LCD Screen -->
+        <div class="screen">
+            <div class="screen-top">
+                <span id="screen-mode">Now Playing</span>
+                <span id="battery">--%</span>
+            </div>
+
+            <div id="screen-content">
+                <!-- Video Player Element -->
+                <video id="video-player" playsinline></video>
+
+                <!-- Now Playing View -->
+                <div class="now-playing" id="now-playing-view">
+                    <div id="song-title">No Music</div>
+                    <div id="artist-name">Select files below</div>
+                    <div class="progress-container">
+                        <div id="progress-fill"></div>
+                    </div>
+                </div>
+
+                <!-- Playlist View -->
+                <div id="playlist-view" style="display: none;">
+                    <ul id="song-list"></ul>
                 </div>
             </div>
+        </div> <!-- FIXED: Screen ends here -->
 
-            <!-- Playlist View -->
-            <div id="playlist-view" style="display: none;">
-                <ul id="song-list"></ul>
+        <!-- Click Wheel -->
+        <div class="wheel-container">
+            <div class="wheel" id="click-wheel">
+                <div class="wheel-label menu" id="menu-btn">MENU</div>
+                <div class="wheel-label next">▶▶</div>
+                <div class="wheel-label prev">◀◀</div>
+                <div class="wheel-label playpause">▶||</div>
+                <div class="center-button" id="center-button"></div>
             </div>
         </div>
-    </div> <!-- FIXED: Screen ends here -->
 
-    <!-- Click Wheel -->
-    <div class="wheel-container">
-        <div class="wheel" id="click-wheel">
-            <div class="wheel-label menu" id="menu-btn">MENU</div>
-            <div class="wheel-label next">▶▶</div>
-            <div class="wheel-label prev">◀◀</div>
-            <div class="wheel-label playpause">▶||</div>
-            <div class="center-button" id="center-button"></div>
-        </div>
-    </div>
+        <!-- Hidden Input & Load Button -->
+        <input type="file" id="file-input" multiple accept=".mp3, .m4a, .wav, .aac, audio/*, video/*">
+        <button class="load-btn" id="load-btn">LOAD LIBRARY</button>
+    </div> <!-- FIXED: iPod ends here -->
 
-    <!-- Hidden Input & Load Button -->
-    <input type="file" id="file-input" multiple accept="audio/*">
-    <button class="load-btn" id="load-btn">LOAD LIBRARY</button>
-</div> <!-- FIXED: iPod ends here -->
+    <audio id="player"></audio>
 
-<audio id="player"></audio>
-
-<script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
+
 </html>
