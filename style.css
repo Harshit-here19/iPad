@@ -47,6 +47,9 @@ body {
     padding: 10px;
     box-sizing: border-box;
     color: #2b3a2e;
+
+    position: relative; /* Base for absolute positioning */
+    overflow: hidden;
 }
 
 .screen-top {
@@ -87,12 +90,15 @@ body {
     height: 10px;
     background: rgba(0, 0, 0, 0.1);
     margin-top: 15px;
+    cursor: pointer;
+    position: relative;
 }
 
 #progress-fill {
     width: 0%;
     height: 100%;
     background: #2b3a2e;
+    pointer-events: none;
 }
 
 .wheel-container {
@@ -215,13 +221,40 @@ body {
 #video-player {
     width: 100%;
     height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
     display: none; /* Hidden until a video is loaded */
     background: #000;
-    object-fit: contain; /* Ensures the video isn't stretched */
+    object-fit: cover; /* Ensures the video isn't stretched */
     border-radius: 4px;
+    z-index: 1;
 }
 
 /* Ensure the Now Playing text hides when video is active */
 .now-playing.video-active {
     display: none !important;
+}
+
+/* The Animation */
+@keyframes lcdFade {
+    0% { opacity: 0; transform: translateY(5px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.lcd-animate {
+    animation: lcdFade 0.4s ease-out;
+}
+
+/* Minimal styling for the active song in playlist */
+.song-item {
+    transition: background-color 0.3s ease, color 0.3s ease;
+    transition: all 0.2s ease; /* This creates the minimal animation */
+}
+
+.song-item.active {
+    background-color: #2b3a2e !important;
+    color: #9fb5a3 !important;
+    font-weight: bold;
+    transform: scale(1.02); /* Slight "pop" animation */
 }

@@ -14,6 +14,7 @@ const songList = document.getElementById('song-list');
 const screenMode = document.getElementById('screen-mode');
 const menuLabel = document.querySelector('.menu');
 const videoPlayer = document.getElementById('video-player');
+const seekBar = document.getElementById('seek-bar');
 
 // 2. State Variables
 let songs = [];
@@ -44,11 +45,13 @@ function renderPlaylist() {
         li.className = 'song-item';
         li.id = `song-${index}`;
         li.innerText = `${index + 1}. ${song.name.split('.')[0]}`;
-        li.onclick = (e) => {
+        
+        // Ensure this is properly attached
+        li.addEventListener('click', (e) => {
             e.stopPropagation();
             loadTrack(index);
-            player.play();
-        };
+        });
+        
         songList.appendChild(li);
     });
 }
@@ -59,7 +62,6 @@ let activeMedia = player;
 
 function loadTrack(idx) {
     if (!songs[idx]) return;
-
     currentIdx = idx;
     localStorage.setItem('lastPlayedIndex', currentIdx);
 
@@ -67,54 +69,80 @@ function loadTrack(idx) {
     const url = URL.createObjectURL(file);
     const isVideo = file.type.startsWith('video');
 
-    // 1. Clean up previous sources to save memory
+    // --- NEW: TRIGGER ANIMATION ---
+    const screenContent = document.getElementById('screen-content');
+    screenContent.classList.remove('lcd-animate');
+    void screenContent.offsetWidth; // "Magic" line to reset the animation
+    screenContent.classList.add('lcd-animate');
+
     if (player.src) URL.revokeObjectURL(player.src);
     if (videoPlayer.src) URL.revokeObjectURL(videoPlayer.src);
 
-    // 2. Handle Video vs Audio UI Swap
     if (isVideo) {
         activeMedia = videoPlayer;
         player.pause();
-        player.src = ""; // Clear audio
-        
         videoPlayer.src = url;
-        videoPlayer.style.display = 'block';
-        nowPlayingView.style.display = 'none'; // Hide song info to show video
+        
+        // Only show video if we aren't currently looking at the playlist
+        videoPlayer.style.display = (playlistView.style.display === 'none') ? 'block' : 'none';
+        nowPlayingView.style.display = 'none';
     } else {
         activeMedia = player;
         videoPlayer.pause();
-        videoPlayer.src = ""; // Clear video
         videoPlayer.style.display = 'none';
-        
         player.src = url;
-        nowPlayingView.style.display = 'flex';
         
-        // Update text metadata for audio only
-        const songName = file.name.split('.')[0];
-        title.innerText = songName;
+        if (playlistView.style.display === 'none') {
+            nowPlayingView.style.display = 'flex';
+        }
+        
+        title.innerText = file.name.split('.')[0];
         artist.innerText = `Song ${currentIdx + 1} of ${songs.length}`;
     }
 
-    // 3. Update Playlist UI (Shared logic)
-    document.querySelectorAll('.song-item').forEach(el => el.classList.remove('active'));
+    // --- PLAYLIST MENU UPDATE ---
+    updatePlaylistUI(idx);
+
+    activeMedia.play().catch(() => {});
+    updatePlaylistHighlight(idx);
+}
+
+// This function handles the visual change in the list
+function updatePlaylistHighlight(idx) {
+    // 1. Remove highlight from everyone
+    document.querySelectorAll('.song-item').forEach(el => {
+        el.classList.remove('active');
+    });
+
+    // 2. Highlight the new song
     const activeItem = document.getElementById(`song-${idx}`);
     if (activeItem) {
         activeItem.classList.add('active');
-        activeItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-
-    // 4. Media Session (Lock Screen Controls)
-    if ('mediaSession' in navigator) {
-        navigator.mediaSession.metadata = new MediaMetadata({
-            title: file.name.split('.')[0],
-            artist: "Local Library",
-            album: "RetroPod"
+        
+        // 3. Minimal scroll animation: keep the song in the middle of the LCD
+        activeItem.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
         });
-        setupMediaActions();
     }
+}
 
-    // 5. Play the active media
-    activeMedia.play().catch(() => console.log("User interaction required"));
+function updatePlaylistUI(idx) {
+    // Remove active class from all items
+    const items = document.querySelectorAll('.song-item');
+    items.forEach(item => item.classList.remove('active'));
+
+    // Add active class to current item
+    const activeItem = document.getElementById(`song-${idx}`);
+    if (activeItem) {
+        activeItem.classList.add('active');
+        
+        // Minimal smooth scroll so the active track is always visible
+        activeItem.scrollIntoView({
+            behavior: 'smooth',
+            block: 'nearest'
+        });
+    }
 }
 
 function setupMediaActions() {
@@ -125,8 +153,20 @@ function setupMediaActions() {
 }
 
 function togglePlay() {
-    if (!player.src) return;
-    player.paused ? player.play() : player.pause();
+    // 1. Check if we have a file loaded at all
+    if (!activeMedia || !activeMedia.src) {
+        console.log("No media loaded to play/pause");
+        return;
+    }
+
+    // 2. Perform the toggle
+    if (activeMedia.paused) {
+        activeMedia.play().catch(err => {
+            console.error("Playback failed:", err);
+        });
+    } else {
+        activeMedia.pause();
+    }
 }
 
 function nextTrack() {
@@ -143,17 +183,36 @@ function prevTrack() {
     player.play();
 }
 
+// 3. The Video Bar (Seek) Logic
+seekBar.onclick = function(e) {
+    if (!activeMedia.duration) return;
+    
+    // Calculate click position relative to the bar width
+    const rect = seekBar.getBoundingClientRect();
+    const pos = (e.clientX - rect.left) / rect.width;
+    
+    // Set the new time
+    activeMedia.currentTime = pos * activeMedia.duration;
+};
+
 // 5. Navigation / View Toggling
 function showPlaylist() {
     nowPlayingView.style.display = 'none';
     playlistView.style.display = 'block';
+    videoPlayer.style.display = 'none';
     screenMode.innerText = "Playlist";
 }
 
 function showNowPlaying() {
     playlistView.style.display = 'none';
-    nowPlayingView.style.display = 'flex';
     screenMode.innerText = "Now Playing";
+    
+    // Check if what's playing is actually a video
+    if (activeMedia === videoPlayer) {
+        videoPlayer.style.display = 'block';
+    } else {
+        nowPlayingView.style.display = 'flex';
+    }
 }
 
 menuLabel.addEventListener('click', (e) => {
