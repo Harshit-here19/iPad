@@ -101,6 +101,19 @@ body {
     pointer-events: none;
 }
 
+/* Video specific (At bottom) */
+#video-controls {
+    width: 90%;
+    margin: 10px auto;
+    padding-bottom: 15px;
+}
+.video-bar {
+    height: 14px; /* Thicker for easier seeking on video */
+    border-radius: 7px;
+    background: rgba(0,0,0,0.2);
+}
+#video-progress-fill { height: 100%; background: #ff0000; width: 0%; } /* Red bar for video */
+
 .wheel-container {
     margin-top: 40px;
     position: relative;
@@ -257,4 +270,17 @@ body {
     color: #9fb5a3 !important;
     font-weight: bold;
     transform: scale(1.02); /* Slight "pop" animation */
+}
+
+.scrub-hint {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0,0,0,0.5);
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    display: none;
+    z-index: 100;
 }
