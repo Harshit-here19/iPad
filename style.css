@@ -1,0 +1,213 @@
+:root {
+    --body-silver: #d1d1d1;
+    --screen-green: #9fb5a3;
+    --wheel-white: #f0f0f0;
+    --text-dark: #333;
+}
+
+body {
+    background-color: #1a1a1a;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.ipod {
+    width: 320px;
+    height: 520px;
+    background: linear-gradient(145deg, #e6e6e6, #bebebe);
+    border-radius: 40px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 10px;
+    /* Reduced side padding from 20px to 10px */
+    border: 1px solid #999;
+}
+
+.screen {
+    width: 290px;
+    /* Increased from 260px */
+    height: 200px;
+    /* Increased from 180px */
+    background-color: var(--screen-green);
+    border: 5px solid #444;
+    border-radius: 8px;
+    margin-top: 10px;
+    box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    box-sizing: border-box;
+    color: #2b3a2e;
+}
+
+.screen-top {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    font-weight: bold;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+    padding-bottom: 5px;
+}
+
+.now-playing {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+#song-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#artist-name {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+.progress-container {
+    width: 100%;
+    height: 10px;
+    background: rgba(0, 0, 0, 0.1);
+    margin-top: 15px;
+}
+
+#progress-fill {
+    width: 0%;
+    height: 100%;
+    background: #2b3a2e;
+}
+
+.wheel-container {
+    margin-top: 40px;
+    position: relative;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.wheel {
+    width: 210px;
+    height: 210px;
+    background: var(--wheel-white);
+    border-radius: 50%;
+    position: relative;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), inset 0 0 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    touch-action: none;
+    /* Crucial: stops the browser from trying to scroll the page */
+    -webkit-user-select: none;    /* Stops text selection while spinning */
+    z-index: 1;
+}
+
+.center-button {
+    width: 75px;
+    height: 75px;
+    background: var(--body-silver);
+    border-radius: 50%;
+    border: 1px solid #aaa;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.wheel-label {
+    position: absolute;
+    font-size: 13px;
+    font-weight: 800;
+    color: #888;
+    cursor: pointer;
+    z-index: 20;
+    /* Ensure it sits above the wheel surface */
+    pointer-events: auto;
+    /* This allows the click to be registered */
+}
+
+.wheel-label.menu {
+    pointer-events: auto !important;
+    cursor: pointer;
+    padding: 20px; /* Makes the "hit area" bigger for your thumb */
+    top: 8px;    /* Adjusted for padding */
+}
+
+.next {
+    right: 15px;
+}
+
+.prev {
+    left: 15px;
+}
+
+.playpause {
+    bottom: 15px;
+}
+
+#file-input {
+    display: none;
+}
+
+.load-btn {
+    margin-top: 25px;
+    background: #444;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+/* Container for the list to allow scrolling */
+#playlist-view {
+    width: 100%;
+    height: 140px;
+    /* Fits inside the LCD */
+    overflow-y: auto;
+    margin-top: 5px;
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+#playlist-view::-webkit-scrollbar {
+    display: none;
+}
+
+/* Chrome/Safari */
+
+#song-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.song-item {
+    padding: 6px 8px;
+    font-size: 13px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* The "I'm playing this" look */
+.song-item.active {
+    background-color: #2b3a2e;
+    color: var(--screen-green);
+}

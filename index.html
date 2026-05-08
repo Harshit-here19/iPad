@@ -4,388 +4,56 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>RetroPod</title>
-    
+    <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
-
-<meta name="theme-color" content="#1a1a1a">
-
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta name="apple-mobile-web-app-title" content="RetroPod">
-
-<link rel="apple-touch-icon" href="icon-192.png">
-
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
-    
-    <style>
-        :root {
-            --body-silver: #d1d1d1;
-            --screen-green: #9fb5a3;
-            --wheel-white: #f0f0f0;
-            --text-dark: #333;
-        }
-
-        body {
-            background-color: #1a1a1a;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            overflow: hidden;
-        }
-
-        /* iPod Chassis */
-        .ipod {
-            width: 320px;
-            height: 520px;
-            background: linear-gradient(145deg, #e6e6e6, #bebebe);
-            border-radius: 40px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-            border: 1px solid #999;
-        }
-
-        /* LCD Screen */
-        .screen {
-            width: 260px;
-            height: 180px;
-            background-color: var(--screen-green);
-            border: 5px solid #444;
-            border-radius: 8px;
-            margin-top: 10px;
-            box-shadow: inset 0 0 15px rgba(0,0,0,0.3);
-            display: flex;
-            flex-direction: column;
-            padding: 10px;
-            box-sizing: border-box;
-            color: #2b3a2e;
-        }
-
-        .screen-top {
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            font-weight: bold;
-            border-bottom: 1px solid rgba(0,0,0,0.2);
-            padding-bottom: 5px;
-        }
-
-        .now-playing {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-        }
-
-        #song-title { font-size: 18px; font-weight: bold; margin-bottom: 5px; }
-        #artist-name { font-size: 14px; opacity: 0.8; }
-
-        /* Progress Bar */
-        .progress-container {
-            width: 100%;
-            height: 8px;
-            background: rgba(0,0,0,0.1);
-            margin-top: 10px;
-        }
-        #progress-fill {
-            width: 0%;
-            height: 100%;
-            background: #2b3a2e;
-        }
-
-        /* The Click Wheel */
-        .wheel-container {
-            margin-top: 40px;
-            position: relative;
-        }
-
-        .wheel {
-            width: 210px;
-            height: 210px;
-            background: var(--wheel-white);
-            border-radius: 50%;
-            position: relative;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1), inset 0 0 5px rgba(0,0,0,0.1);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            touch-action: none;
-            transition: transform 0.1s linear;
-        }
-
-        .center-button {
-            width: 75px;
-            height: 75px;
-            background: var(--body-silver);
-            border-radius: 50%;
-            border: 1px solid #aaa;
-            cursor: pointer;
-            z-index: 10;
-            box-shadow: inset 0 2px 5px rgba(255,255,255,0.5);
-        }
-
-        .wheel-label {
-            position: absolute;
-            font-size: 13px;
-            font-weight: 800;
-            color: #888;
-            cursor: pointer;
-            user-select: none;
-        }
-
-        .menu { top: 15px; }
-        .next { right: 15px; }
-        .prev { left: 15px; }
-        .playpause { bottom: 15px; }
-
-        /* File Input Styling */
-        #file-input { display: none; }
-        .load-btn {
-            margin-top: 25px;
-            background: #444;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 12px;
-            cursor: pointer;
-        }
-    </style>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 </head>
 <body>
 
 <div class="ipod">
+    <!-- LCD Screen -->
     <div class="screen">
         <div class="screen-top">
-            <span>RetroPod</span>
-            <span id="battery">100%</span>
+            <span id="screen-mode">Now Playing</span>
+            <span id="battery">--%</span>
         </div>
-        <div class="now-playing">
-            <div id="song-title">No Music</div>
-            <div id="artist-name">Select files below</div>
-            <div class="progress-container">
-                <div id="progress-fill"></div>
+        
+        <div id="screen-content">
+            <!-- Now Playing View -->
+            <div class="now-playing" id="now-playing-view">
+                <div id="song-title">No Music</div>
+                <div id="artist-name">Select files below</div>
+                <div class="progress-container">
+                    <div id="progress-fill"></div>
+                </div>
+            </div>
+
+            <!-- Playlist View -->
+            <div id="playlist-view" style="display: none;">
+                <ul id="song-list"></ul>
             </div>
         </div>
-    </div>
+    </div> <!-- FIXED: Screen ends here -->
 
+    <!-- Click Wheel -->
     <div class="wheel-container">
         <div class="wheel" id="click-wheel">
-            <div class="wheel-label menu" onclick="location.reload()">MENU</div>
-            <div class="wheel-label next" onclick="nextTrack()">▶▶</div>
-            <div class="wheel-label prev" onclick="prevTrack()">◀◀</div>
-            <div class="wheel-label playpause" onclick="togglePlay()">▶||</div>
-            <div class="center-button" onclick="togglePlay()"></div>
+            <div class="wheel-label menu" id="menu-btn">MENU</div>
+            <div class="wheel-label next">▶▶</div>
+            <div class="wheel-label prev">◀◀</div>
+            <div class="wheel-label playpause">▶||</div>
+            <div class="center-button" id="center-button"></div>
         </div>
     </div>
 
-   <input type="file" id="file-input" multiple accept=".mp3,.m4a,.wav,.aac,audio/*">
-    <button class="load-btn" onclick="document.getElementById('file-input').click()">LOAD LIBRARY</button>
-</div>
+    <!-- Hidden Input & Load Button -->
+    <input type="file" id="file-input" multiple accept="audio/*">
+    <button class="load-btn" id="load-btn">LOAD LIBRARY</button>
+</div> <!-- FIXED: iPod ends here -->
 
 <audio id="player"></audio>
 
-<script>
-
-if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("./sw.js")
-        .then(() => console.log("SW Registered"));
-}
-
-    const fileInput = document.getElementById('file-input');
-    const player = document.getElementById('player');
-    const title = document.getElementById('song-title');
-    const artist = document.getElementById('artist-name');
-    const progress = document.getElementById('progress-fill');
-    const wheel = document.getElementById('click-wheel');
-
-    let songs = [];
-    let currentIdx = 0;
-
-    // Handle File Selection
-    fileInput.onchange = (e) => {
-        songs = Array.from(e.target.files);
-        if (songs.length > 0) {
-            loadTrack(0);
-            document.querySelector('.load-btn').style.display = 'none';
-        }
-    };
-
-    function loadTrack(idx) {
-    currentIdx = idx;
-
-    const url = URL.createObjectURL(songs[idx]);
-
-    player.src = url;
-
-    title.innerText = songs[idx].name.split('.')[0];
-    artist.innerText = "Local Library";
-
-    // Lock screen / Control Center info
-    if ('mediaSession' in navigator) {
-        navigator.mediaSession.metadata = new MediaMetadata({
-            title: songs[idx].name.split('.')[0],
-            artist: "Local Library",
-            album: "RetroPod",
-            artwork: [
-                {
-                    src: "icon-512.png",
-                    sizes: "512x512",
-                    type: "image/png"
-                }
-            ]
-        });
-    }
-}
-
-    function togglePlay() {
-        if (!player.src) return;
-        player.paused ? player.play() : player.pause();
-    }
-
-    function nextTrack() {
-        if (songs.length === 0) return;
-        currentIdx = (currentIdx + 1) % songs.length;
-        loadTrack(currentIdx);
-        player.play();
-    }
-
-    function prevTrack() {
-        if (songs.length === 0) return;
-        currentIdx = (currentIdx - 1 + songs.length) % songs.length;
-        loadTrack(currentIdx);
-        player.play();
-    }
-
-    // Progress Bar Logic
-    player.ontimeupdate = () => {
-        const pct = (player.currentTime / player.duration) * 100;
-        progress.style.width = pct + "%";
-    };
-
-    player.onended = () => nextTrack();
-
-    const wheel = document.getElementById('click-wheel');
-
-let isDragging = false;
-let lastAngle = 0;
-let rotationAccumulator = 0;
-
-function getAngle(x, y, rect) {
-    const cx = rect.left + rect.width / 2;
-    const cy = rect.top + rect.height / 2;
-
-    return Math.atan2(y - cy, x - cx) * (180 / Math.PI);
-}
-
-function handleMove(clientX, clientY) {
-    const rect = wheel.getBoundingClientRect();
-    const angle = getAngle(clientX, clientY, rect);
-
-    let delta = angle - lastAngle;
-
-    // Prevent jump between -180 and 180
-    if (delta > 180) delta -= 360;
-    if (delta < -180) delta += 360;
-
-    rotationAccumulator += delta;
-
-    // Trigger action every 25 degrees
-    if (rotationAccumulator > 25) {
-        nextTrack();
-        rotationAccumulator = 0;
-    }
-
-    if (rotationAccumulator < -25) {
-        prevTrack();
-        rotationAccumulator = 0;
-    }
-
-    lastAngle = angle;
-}
-
-/* TOUCH */
-wheel.addEventListener('touchstart', (e) => {
-    isDragging = true;
-
-    const rect = wheel.getBoundingClientRect();
-    lastAngle = getAngle(
-        e.touches[0].clientX,
-        e.touches[0].clientY,
-        rect
-    );
-});
-
-wheel.addEventListener('touchmove', (e) => {
-    if (!isDragging) return;
-
-    handleMove(
-        e.touches[0].clientX,
-        e.touches[0].clientY
-    );
-}, { passive: true });
-
-wheel.addEventListener('touchend', () => {
-    isDragging = false;
-});
-
-/* MOUSE */
-wheel.addEventListener('mousedown', (e) => {
-    isDragging = true;
-
-    const rect = wheel.getBoundingClientRect();
-    lastAngle = getAngle(
-        e.clientX,
-        e.clientY,
-        rect
-    );
-});
-
-window.addEventListener('mousemove', (e) => {
-    if (!isDragging) return;
-
-    handleMove(
-        e.clientX,
-        e.clientY
-    );
-});
-
-window.addEventListener('mouseup', () => {
-    isDragging = false;
-});
-
-const batteryText = document.getElementById("battery");
-
-async function updateBattery() {
-    if (!navigator.getBattery) {
-        batteryText.innerText = "--%";
-        return;
-    }
-
-    const battery = await navigator.getBattery();
-
-    function refreshBattery() {
-        batteryText.innerText =
-            Math.round(battery.level * 100) + "%";
-    }
-
-    refreshBattery();
-
-    battery.addEventListener("levelchange", refreshBattery);
-}
-
-updateBattery();
-
-</script>
-
+<script src="script.js"></script>
 </body>
 </html>
